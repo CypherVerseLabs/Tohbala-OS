@@ -10,6 +10,39 @@ import { Company } from "@/config/company";
 import { Opportunity } from "@/types/opportunity";
 import { Activity } from "@/types/activity";
 
+import { supabase } from "@/lib/supabase";
+
+
+const companyToDb = (company: Company) => ({
+  name: company.name,
+  website: company.website,
+  industry: company.industry,
+  size: company.size,
+  description: company.description,
+  location: company.location,
+  primary_contact: company.primaryContact,
+  email: company.email,
+  phone: company.phone,
+  created_at: company.createdAt,
+  updated_at: company.updatedAt,
+});
+
+
+const companyFromDb = (row: any): Company => ({
+  id: row.id,
+  name: row.name,
+  website: row.website ?? "",
+  industry: row.industry ?? "",
+  size: row.size ?? "",
+  description: row.description ?? "",
+  location: row.location ?? "",
+  primaryContact: row.primary_contact ?? "",
+  email: row.email ?? "",
+  phone: row.phone ?? "",
+  createdAt: row.created_at,
+  updatedAt: row.updated_at,
+});
+
 
 interface DataContextType {
 
@@ -20,24 +53,23 @@ interface DataContextType {
   activities: Activity[];
 
 
-  addCompany:(company:Company)=>void;
+  addCompany:(company:Company)=>Promise<void>;
 
-  updateCompany:(company:Company)=>void;
+  updateCompany:(company:Company)=>Promise<void>;
 
-  deleteCompany:(id:string)=>void;
-
-
-  addOpportunity:(opportunity:Opportunity)=>void;
-
-  updateOpportunity:(opportunity:Opportunity)=>void;
-
-  deleteOpportunity:(id:string)=>void;
+  deleteCompany:(id:string)=>Promise<void>;
 
 
-  addActivity:(activity:Activity)=>void;
+  addOpportunity:(opportunity:Opportunity)=>Promise<void>;
+
+  updateOpportunity:(opportunity:Opportunity)=>Promise<void>;
+
+  deleteOpportunity:(id:string)=>Promise<void>;
+
+
+  addActivity:(activity:Activity)=>Promise<void>;
 
 }
-
 
 
 const DataContext =
@@ -117,22 +149,8 @@ children:ReactNode;
 
 
 
-const [companies,setCompanies]=
-useState<Company[]>(()=>{
-
-const saved =
-localStorage.getItem(
-"tohbala_companies"
-);
-
-
-return saved
-?
-JSON.parse(saved)
-:
-seedCompanies;
-
-});
+const [companies,setCompanies] =
+useState<Company[]>([]);
 
 
 
@@ -272,61 +290,77 @@ JSON.parse(saved)
 
 
 
+useEffect(() => {
+  loadCompanies();
+  loadOpportunities();
+  loadActivities();
+}, []);
+
+const loadOpportunities = async () => {
+  const { data, error } = await supabase
+    .from("opportunities")
+    .select("*");
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  setOpportunities(data ?? []);
+};
+
+const loadActivities = async () => {
+  const { data, error } = await supabase
+    .from("activities")
+    .select("*");
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  setActivities(data ?? []);
+};
+
+const loadCompanies = async () => {
+  const { data, error } = await supabase
+    .from("companies")
+    .select("*");
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  setCompanies(
+    (data ?? []).map(companyFromDb)
+  );
+};
 
 
-useEffect(()=>{
 
-localStorage.setItem(
-"tohbala_companies",
-JSON.stringify(companies)
-);
+const addActivity = async (activity: Activity) => {
 
-},[companies]);
-
-
-
-
-
-useEffect(()=>{
-
-localStorage.setItem(
-"tohbala_opportunities",
-JSON.stringify(opportunities)
-);
-
-},[opportunities]);
+  const { error } = await supabase
+    .from("activities")
+    .insert({
+      id: activity.id,
+      company_id: activity.companyId,
+      opportunity_id: activity.opportunityId,
+      type: activity.type,
+      title: activity.title,
+      description: activity.description,
+      created_at: activity.createdAt
+    });
 
 
+  if(error){
+    console.error("Activity insert failed:", error);
+    return;
+  }
 
 
-
-useEffect(()=>{
-
-localStorage.setItem(
-"tohbala_activities",
-JSON.stringify(activities)
-);
-
-},[activities]);
-
-
-
-
-
-
-
-
-const addActivity=(activity:Activity)=>{
-
-
-setActivities(prev=>[
-
-activity,
-
-...prev
-
-]);
-
+  await loadActivities();
 
 };
 
@@ -339,39 +373,32 @@ activity,
 
 
 
-const addCompany=(company:Company)=>{
+const addCompany = async (company: Company) => {
+
+  const { data, error } = await supabase
+    .from("companies")
+    .insert(companyToDb(company))
+    .select()
+    .single();
 
 
-setCompanies(prev=>[
-
-...prev,
-
-company
-
-]);
+  if(error){
+    console.error(error);
+    return;
+  }
 
 
-addActivity({
+  await loadCompanies();
 
-id:
-Date.now().toString(),
 
-companyId:
-company.id,
-
-type:"note",
-
-title:
-"Company Created",
-
-description:
-`${company.name} was added`,
-
-createdAt:
-new Date().toISOString()
-
-});
-
+  await addActivity({
+    id: crypto.randomUUID(),
+    companyId:data.id,
+    type:"note",
+    title:"Company Created",
+    description:`${data.name} was added`,
+    createdAt:new Date().toISOString()
+  });
 
 };
 
@@ -383,35 +410,53 @@ new Date().toISOString()
 
 
 
+const updateCompany = async (company: Company) => {
 
-const updateCompany=(company:Company)=>{
+  const { error } = await supabase
+    .from("companies")
+    .update(
+      companyToDb({
+        ...company,
+        updatedAt:new Date().toISOString()
+      })
+    )
+    .eq(
+      "id",
+      company.id
+    );
 
 
-setCompanies(prev=>
+  if(error){
+    console.error(error);
+    return;
+  }
 
-prev.map(item=>
 
-item.id===company.id
+  await loadCompanies();
 
-?
+};
 
-{
 
-...company,
 
-updatedAt:
-new Date().toISOString()
 
-}
 
-:
 
-item
 
-)
+const deleteCompany = async (id:string)=>{
 
-);
+ const {error}=await supabase
+   .from("companies")
+   .delete()
+   .eq("id",id);
 
+
+ if(error){
+   console.error(error);
+   return;
+ }
+
+
+ await loadCompanies();
 
 };
 
@@ -423,90 +468,7 @@ item
 
 
 
-const deleteCompany=(id:string)=>{
-
-
-const company =
-companies.find(
-item=>item.id===id
-);
-
-
-
-
-setCompanies(prev=>
-
-prev.filter(
-item=>item.id!==id
-)
-
-);
-
-
-
-
-
-setOpportunities(prev=>
-
-prev.filter(
-item=>item.companyId!==id
-)
-
-);
-
-
-
-
-
-setActivities(prev=>
-
-prev.filter(
-item=>item.companyId!==id
-)
-
-);
-
-
-
-
-
-
-if(company){
-
-addActivity({
-
-id:
-Date.now().toString(),
-
-type:"note",
-
-title:
-"Company Deleted",
-
-description:
-`${company.name} was removed`,
-
-createdAt:
-new Date().toISOString()
-
-});
-
-
-}
-
-
-
-};
-
-
-
-
-
-
-
-
-
-const addOpportunity=(opportunity:Opportunity)=>{
+const addOpportunity = async (opportunity: Opportunity) => {
 
 
 setOpportunities(prev=>[
@@ -519,7 +481,7 @@ opportunity
 
 
 
-addActivity({
+await addActivity({
 
 id:
 Date.now().toString(),
@@ -554,7 +516,7 @@ new Date().toISOString()
 
 
 
-const updateOpportunity=(opportunity:Opportunity)=>{
+const updateOpportunity = async (opportunity: Opportunity) => {
 
 
 setOpportunities(prev=>
@@ -594,7 +556,7 @@ item
 
 
 
-const deleteOpportunity=(id:string)=>{
+const deleteOpportunity = async (id: string) => {
 
 
 const opportunity =
@@ -619,7 +581,7 @@ item=>item.id!==id
 if(opportunity){
 
 
-addActivity({
+await addActivity({
 
 id:
 Date.now().toString(),

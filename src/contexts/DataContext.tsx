@@ -43,6 +43,51 @@ const companyFromDb = (row: any): Company => ({
   updatedAt: row.updated_at,
 });
 
+const opportunityToDb = (o: Opportunity) => ({
+  company_id: o.companyId || null,
+  company_name: o.companyName,
+  contact_name: o.contactName,
+  email: o.email,
+  phone: o.phone,
+  website: o.website,
+  industry: o.industry,
+  company_size: o.companySize,
+  business_problem: o.businessProblem,
+  proposed_solution: o.proposedSolution,
+  technology_needs: o.technologyNeeds,
+  status: o.status,
+  estimated_value: o.estimatedValue,
+  source: o.source,
+  last_contact: o.lastContact,
+  next_follow_up: o.nextFollowUp,
+  notes: o.notes,
+  created_at: o.createdAt,
+  updated_at: o.updatedAt,
+});
+
+const opportunityFromDb = (row: any): Opportunity => ({
+  id: row.id,
+  companyId: row.company_id ?? "",
+  companyName: row.company_name,
+  contactName: row.contact_name,
+  email: row.email ?? "",
+  phone: row.phone ?? "",
+  website: row.website ?? "",
+  industry: row.industry ?? "",
+  companySize: row.company_size ?? "",
+  businessProblem: row.business_problem ?? "",
+  proposedSolution: row.proposed_solution ?? "",
+  technologyNeeds: row.technology_needs ?? [],
+  status: row.status,
+  estimatedValue: Number(row.estimated_value),
+  source: row.source ?? "",
+  lastContact: row.last_contact ?? "",
+  nextFollowUp: row.next_follow_up ?? "",
+  notes: row.notes ?? "",
+  createdAt: row.created_at,
+  updatedAt: row.updated_at,
+});
+
 
 interface DataContextType {
 
@@ -86,56 +131,7 @@ useContext(DataContext);
 
 
 
-const seedCompanies:Company[]=[
 
-{
-id:"1",
-
-name:"ABC Construction",
-
-industry:"Construction",
-
-website:"abcconstruction.com",
-
-description:
-"Commercial construction company",
-
-email:
-"info@abcconstruction.com",
-
-createdAt:
-new Date().toISOString(),
-
-updatedAt:
-new Date().toISOString()
-
-},
-
-
-{
-id:"2",
-
-name:"XYZ Dental Group",
-
-industry:"Healthcare",
-
-website:"xyzdental.com",
-
-description:
-"Dental organization exploring automation solutions",
-
-email:
-"office@xyzdental.com",
-
-createdAt:
-new Date().toISOString(),
-
-updatedAt:
-new Date().toISOString()
-
-}
-
-];
 
 
 
@@ -156,136 +152,13 @@ useState<Company[]>([]);
 
 
 
-const [opportunities,setOpportunities] =
-useState<Opportunity[]>([
-
-{
-id:"opp-1",
-
-companyId:"1",
-
-companyName:"ABC Construction",
-
-contactName:"John Smith",
-
-email:"john@abcconstruction.com",
-
-phone:"555-555-5555",
-
-website:"abcconstruction.com",
-
-industry:"Construction",
-
-companySize:"51-200",
-
-businessProblem:
-"Manual customer updates and disconnected project tracking.",
-
-proposedSolution:
-"CRM automation with customer portal and workflow management.",
-
-technologyNeeds:[
-"CRM",
-"Workflow Automation",
-"Customer Portal"
-],
-
-status:"discovery",
-
-estimatedValue:25000,
-
-source:"Referral",
-
-lastContact:"2026-07-26",
-
-nextFollowUp:"2026-08-01",
-
-notes:
-"Interested in improving customer communication.",
-
-createdAt:
-new Date().toISOString(),
-
-updatedAt:
-new Date().toISOString()
-
-},
-
-
-{
-id:"opp-2",
-
-companyId:"2",
-
-companyName:"XYZ Dental Group",
-
-contactName:"Sarah Johnson",
-
-email:"sarah@xyzdental.com",
-
-phone:"555-222-3333",
-
-website:"xyzdental.com",
-
-industry:"Healthcare",
-
-companySize:"11-50",
-
-businessProblem:
-"Patient communication is handled manually.",
-
-proposedSolution:
-"Automated patient engagement system.",
-
-technologyNeeds:[
-"AI Automation",
-"CRM",
-"API Integration"
-],
-
-status:"proposal",
-
-estimatedValue:40000,
-
-source:"Networking",
-
-lastContact:"2026-07-25",
-
-nextFollowUp:"2026-08-05",
-
-notes:
-"Proposal being reviewed.",
-
-createdAt:
-new Date().toISOString(),
-
-updatedAt:
-new Date().toISOString()
-
-}
-
-]);
+const [opportunities, setOpportunities] =
+  useState<Opportunity[]>([]);
 
 
 
 
-
-const [activities,setActivities]=
-useState<Activity[]>(()=>{
-
-const saved =
-localStorage.getItem(
-"tohbala_activities"
-);
-
-
-return saved
-?
-JSON.parse(saved)
-:
-[];
-
-});
+const [activities, setActivities] = useState<Activity[]>([]);
 
 
 
@@ -299,27 +172,45 @@ useEffect(() => {
 const loadOpportunities = async () => {
   const { data, error } = await supabase
     .from("opportunities")
-    .select("*");
+    .select("*")
+    .order("created_at", { ascending: false });
 
   if (error) {
-    console.error(error);
+    console.error("Load opportunities failed:", error);
     return;
   }
 
-  setOpportunities(data ?? []);
+  setOpportunities(
+    (data ?? []).map(opportunityFromDb)
+  );
+
+
 };
+
+const activityFromDb = (row: any): Activity => ({
+  id: row.id,
+  companyId: row.company_id ?? "",
+  opportunityId: row.opportunity_id ?? "",
+  type: row.type,
+  title: row.title,
+  description: row.description,
+  createdAt: row.created_at,
+});
+
 
 const loadActivities = async () => {
   const { data, error } = await supabase
-    .from("activities")
-    .select("*");
-
+  .from("activities")
+  .select("*")
+  .order("created_at", { ascending:false });
   if (error) {
     console.error(error);
     return;
   }
 
-  setActivities(data ?? []);
+  setActivities(
+  (data ?? []).map(activityFromDb)
+);
 };
 
 const loadCompanies = async () => {
@@ -389,16 +280,17 @@ const addCompany = async (company: Company) => {
 
 
   await loadCompanies();
+await loadOpportunities();
+await loadCompanies();
 
-
-  await addActivity({
-    id: crypto.randomUUID(),
-    companyId:data.id,
-    type:"note",
-    title:"Company Created",
-    description:`${data.name} was added`,
-    createdAt:new Date().toISOString()
-  });
+await addActivity({
+  id: crypto.randomUUID(),
+  companyId:data.id,
+  type:"note",
+  title:"Company Created",
+  description:`${data.name} was added`,
+  createdAt:new Date().toISOString()
+});
 
 };
 
@@ -433,6 +325,8 @@ const updateCompany = async (company: Company) => {
 
 
   await loadCompanies();
+await loadOpportunities();
+await loadActivities();
 
 };
 
@@ -457,6 +351,8 @@ const deleteCompany = async (id:string)=>{
 
 
  await loadCompanies();
+await loadOpportunities();
+await loadActivities();
 
 };
 
@@ -471,37 +367,39 @@ const deleteCompany = async (id:string)=>{
 const addOpportunity = async (opportunity: Opportunity) => {
 
 
-setOpportunities(prev=>[
+const { data, error } = await supabase
+  .from("opportunities")
+  .insert(
+    opportunityToDb(opportunity)
+  )
+  .select()
+  .single();
 
-...prev,
 
-opportunity
+if(error){
+  console.error("Add opportunity failed:", error);
+  return;
+}
 
-]);
 
+await loadOpportunities();
 
 
 await addActivity({
 
-id:
-Date.now().toString(),
+id: crypto.randomUUID(),
 
-companyId:
-opportunity.companyId,
+companyId:data.company_id,
 
-opportunityId:
-opportunity.id,
+opportunityId:data.id,
 
 type:"note",
 
-title:
-"Opportunity Created",
+title:"Opportunity Created",
 
-description:
-`${opportunity.companyName} opportunity created`,
+description:`${data.company_name} opportunity created`,
 
-createdAt:
-new Date().toISOString()
+createdAt:new Date().toISOString()
 
 });
 
@@ -518,33 +416,35 @@ new Date().toISOString()
 
 const updateOpportunity = async (opportunity: Opportunity) => {
 
-
-setOpportunities(prev=>
-
-prev.map(item=>
-
-item.id===opportunity.id
-
-?
-
-{
-
-...opportunity,
-
-updatedAt:
-new Date().toISOString()
-
-}
-
-:
-
-item
-
-)
-
-);
+  const { error } = await supabase
+    .from("opportunities")
+    .update(
+      opportunityToDb({
+        ...opportunity,
+        updatedAt:new Date().toISOString(),
+      })
+    )
+    .eq("id", opportunity.id);
 
 
+  if(error){
+    console.error("Update opportunity failed:", error);
+    return;
+  }
+
+
+  await loadOpportunities();
+
+
+  await addActivity({
+    id: crypto.randomUUID(),
+    companyId: opportunity.companyId,
+    opportunityId: opportunity.id,
+    type:"note",
+    title:"Opportunity Updated",
+    description:`${opportunity.companyName} opportunity updated`,
+    createdAt:new Date().toISOString()
+  });
 
 };
 
@@ -555,60 +455,34 @@ item
 
 
 
-
 const deleteOpportunity = async (id: string) => {
+  const opportunity = opportunities.find(
+    item => item.id === id
+  );
 
+  const { error } = await supabase
+    .from("opportunities")
+    .delete()
+    .eq("id", id);
 
-const opportunity =
-opportunities.find(
-item=>item.id===id
-);
+  if (error) {
+    console.error("Delete opportunity failed:", error);
+    return;
+  }
 
+  await loadOpportunities();
 
-
-
-setOpportunities(prev=>
-
-prev.filter(
-item=>item.id!==id
-)
-
-);
-
-
-
-
-if(opportunity){
-
-
-await addActivity({
-
-id:
-Date.now().toString(),
-
-companyId:
-opportunity.companyId,
-
-opportunityId:
-opportunity.id,
-
-type:"note",
-
-title:
-"Opportunity Deleted",
-
-description:
-`${opportunity.companyName} opportunity deleted`,
-
-createdAt:
-new Date().toISOString()
-
-});
-
-
-}
-
-
+  if (opportunity) {
+    await addActivity({
+      id: crypto.randomUUID(),
+      companyId: opportunity.companyId,
+      opportunityId: opportunity.id,
+      type: "note",
+      title: "Opportunity Deleted",
+      description: `${opportunity.companyName} opportunity deleted`,
+      createdAt: new Date().toISOString(),
+    });
+  }
 };
 
 

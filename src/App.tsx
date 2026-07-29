@@ -15,51 +15,82 @@ import {
 
 import { ThemeProvider } from "@/components/theme-provider";
 
+import { AuthProvider } from "@/contexts/AuthContext";
 import { AppProvider } from "@/contexts/AppContext";
 import { DataProvider } from "@/contexts/DataContext";
 
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
 import Index from "./pages/Index";
+import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+
 
 const queryClient = new QueryClient();
 
+
 const App = () => (
+
   <ThemeProvider defaultTheme="light">
+
     <QueryClientProvider client={queryClient}>
+
       <TooltipProvider>
 
-        <AppProvider>
+        <BrowserRouter>
 
-          <DataProvider>
+          <AuthProvider>
 
-            <Toaster />
-            <Sonner />
+            <AppProvider>
 
-            <BrowserRouter>
+              <DataProvider>
 
-              <Routes>
+                <Toaster />
 
-                <Route
-                  path="/"
-                  element={<Index />}
-                />
+                <Sonner />
 
-                <Route
-                  path="*"
-                  element={<NotFound />}
-                />
 
-              </Routes>
+                <Routes>
 
-            </BrowserRouter>
+                  <Route
+                    path="/"
+                    element={
+                      <ProtectedRoute>
+                        <Index />
+                      </ProtectedRoute>
+                    }
+                  />
 
-          </DataProvider>
 
-        </AppProvider>
+                  <Route
+                    path="/login"
+                    element={<Login />}
+                  />
+
+
+                  <Route
+                    path="*"
+                    element={<NotFound />}
+                  />
+
+                </Routes>
+
+
+              </DataProvider>
+
+            </AppProvider>
+
+          </AuthProvider>
+
+        </BrowserRouter>
 
       </TooltipProvider>
+
     </QueryClientProvider>
+
   </ThemeProvider>
+
 );
+
 
 export default App;

@@ -27,10 +27,10 @@ import { Button } from "@/components/ui/button";
 
 import { Company } from "@/config/company";
 
-import ActivityTimeline from "./ActivityTimeline";
+import ActivityTimeline from "../Activity/ActivityTimeline";
 
 import { Plus } from "lucide-react";
-import DiscoveryForm from "./DiscoveryForm";
+import DiscoveryForm from "../DiscoveryForm";
 import { useState } from "react";
 import { useData } from "@/contexts/DataContext";
 

@@ -7,17 +7,12 @@ import {
 } from "@/components/ui/card";
 
 import {
-  Button
-} from "@/components/ui/button";
-
-import {
-  Plus,
-  Search
-} from "lucide-react";
-
-import {
   Input
 } from "@/components/ui/input";
+
+import {
+  Search
+} from "lucide-react";
 
 import ActivityTimeline from "./ActivityTimeline";
 import AddActivityForm from "./AddActivityForm";
@@ -26,53 +21,20 @@ import {
   Activity
 } from "@/types/activity";
 
+import {
+  useData
+} from "@/contexts/DataContext";
+
 
 
 const ActivityManager:React.FC = () => {
 
 
-const [
-activities,
-setActivities
-]=useState<Activity[]>([
-
-{
-id:"1",
-
-companyId:"1",
-
-type:"meeting",
-
-title:"Discovery Meeting",
-
-description:
-"Discussed customer communication problems and automation needs.",
-
-createdAt:
-new Date().toISOString()
-
-},
-
-{
-id:"2",
-
-companyId:"1",
-
-type:"email",
-
-title:"Follow up email sent",
-
-description:
-"Sent company information and scheduling options.",
-
-createdAt:
-new Date(
-Date.now()-86400000
-).toISOString()
-
-}
-
-]);
+const {
+  activities,
+  companies,
+  addActivity
+} = useData();
 
 
 
@@ -90,14 +52,18 @@ setSelectedCompany
 
 
 
-const addActivity=(activity:Activity)=>{
 
-setActivities(prev=>[
-activity,
-...prev
-]);
+
+const handleAddActivity = async (
+activity:Activity
+)=>{
+
+await addActivity(activity);
 
 };
+
+
+
 
 
 
@@ -106,6 +72,7 @@ activities.filter(activity=>{
 
 
 const matchesSearch =
+
 activity.title
 .toLowerCase()
 .includes(search.toLowerCase())
@@ -119,16 +86,24 @@ activity.description
 
 
 const matchesCompany =
+
 selectedCompany==="all"
+
 ||
+
 activity.companyId===selectedCompany;
 
 
 
-return matchesSearch && matchesCompany;
+return (
+matchesSearch &&
+matchesCompany
+);
 
 
 });
+
+
 
 
 
@@ -244,9 +219,9 @@ Add Activity
 
 <AddActivityForm
 
-companyId="1"
+companies={companies}
 
-onSubmit={addActivity}
+onSubmit={handleAddActivity}
 
 />
 

@@ -19,8 +19,8 @@ import {
 
 
 import OpportunityCard from "./OpportunityCard";
-import DiscoveryForm from "./DiscoveryForm";
-import ActivityTimeline from "./ActivityTimeline";
+import DiscoveryForm from "../DiscoveryForm";
+import ActivityTimeline from "../Activity/ActivityTimeline";
 
 
 import {

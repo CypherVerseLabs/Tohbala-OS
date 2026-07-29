@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { useAppContext } from '@/contexts/AppContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from './Sidebar';
-import Header from './Header';
+import Header from './Header/Header';
 import Dashboard from './Dashboard';
-import OpportunityManager from './OpportunityManager';
+import OpportunityManager from './Opportunity/OpportunityManager';
 import Analytics from './Analytics';
-import CompanyManager from './CompanyManager';
-import ActivityManager from './ActivityManager';
-import PipelineBoard from './PipelineBoard';
+import CompanyManager from './company/CompanyManager';
+import ActivityManager from './Activity/ActivityManager';
+import PipelineBoard from './PipelineBoard/PipelineBoard';
+import AIOpportunityScanner from '@/components/ai/AIOpportunityScanner';
+import SettingsPanel from './settings/SettingsPanel';
 
 const AppLayout: React.FC = () => {
   const { sidebarOpen, toggleSidebar } = useAppContext();
@@ -39,13 +41,7 @@ return <CompanyManager />;
 
 
 case "ai":
-return (
-<div className="p-6">
-<h1 className="text-2xl font-bold">
-AI Opportunity Scanner Coming Soon
-</h1>
-</div>
-);
+return <AIOpportunityScanner />;
 
 
 case "activities":
@@ -53,13 +49,7 @@ return <ActivityManager />;
 
 
 case "settings":
-return (
-<div className="p-6">
-<h1 className="text-2xl font-bold">
-Settings
-</h1>
-</div>
-);
+return <SettingsPanel />;
 
 
 default:

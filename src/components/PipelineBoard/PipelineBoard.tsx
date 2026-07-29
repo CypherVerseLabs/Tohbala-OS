@@ -35,7 +35,7 @@ import {
 } from "@/contexts/DataContext";
 
 
-import OpportunityCard from "./OpportunityCard";
+import OpportunityCard from "../Opportunity/OpportunityCard";
 
 
 

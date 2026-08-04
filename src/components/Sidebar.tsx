@@ -1,91 +1,102 @@
 import React from "react";
 import {
-Home,
-Building2,
-Target,
-Kanban,
-Brain,
-Activity,
-BarChart3,
-Settings
+  Home,
+  Building2,
+  Target,
+  Kanban,
+  Brain,
+  Activity,
+  BarChart3,
+  Settings,
+  DollarSign,
 } from "lucide-react";
 
-import {cn} from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 
-interface SidebarProps{
+interface SidebarProps {
 
-activeTab:string;
+  activeTab:string;
 
-onTabChange:(tab:string)=>void;
+  onTabChange:(tab:string)=>void;
 
-isOpen:boolean;
+  isOpen:boolean;
 
 }
 
 
 
-const menuItems=[
+const menuItems = [
 
 {
-id:"dashboard",
-label:"Command Center",
-icon:Home
+ id:"dashboard",
+ label:"Command Center",
+ icon:Home
 },
 
 {
-id:"opportunities",
-label:"Opportunities",
-icon:Target
+ id:"opportunities",
+ label:"Opportunities",
+ icon:Target
 },
 
 {
-id:"companies",
-label:"Companies",
-icon:Building2
-},
-
-
-{
-id:"pipeline",
-label:"Pipeline",
-icon:Kanban
+ id:"companies",
+ label:"Companies",
+ icon:Building2
 },
 
 {
-id:"ai",
-label:"AI Intelligence",
-icon:Brain
+ id:"pipeline",
+ label:"Pipeline",
+ icon:Kanban
 },
 
 {
-id:"activities",
-label:"Activities",
-icon:Activity
+ id:"ai",
+ label:"AI Intelligence",
+ icon:Brain
 },
 
 {
-id:"analytics",
-label:"Analytics",
-icon:BarChart3
+ id:"activities",
+ label:"Activities",
+ icon:Activity
 },
 
 {
-id:"settings",
-label:"Settings",
-icon:Settings
+ id:"revenue",
+ label:"Revenue OS",
+ icon:DollarSign
+},
+
+{
+ id:"analytics",
+ label:"Analytics",
+ icon:BarChart3
+},
+
+{
+ id:"settings",
+ label:"Settings",
+ icon:Settings
 }
 
 ];
 
 
 
-const Sidebar:React.FC<SidebarProps>=
-({
-activeTab,
-onTabChange,
-isOpen
-})=>{
+
+const Sidebar:React.FC<SidebarProps> = ({
+ activeTab,
+ onTabChange,
+ isOpen
+}) => {
+
+
+const navigate = useNavigate();
+
 
 
 return (
@@ -93,7 +104,7 @@ return (
 <div
 className={cn(
 "bg-gradient-to-b from-teal-600 to-purple-700 text-white h-full",
-isOpen?"w-64":"w-16"
+isOpen ? "w-64" : "w-16"
 )}
 >
 
@@ -104,10 +115,12 @@ isOpen?"w-64":"w-16"
 <div className="flex items-center gap-3">
 
 
-<div className="
+<div
+className="
 w-8 h-8 bg-white rounded-lg
 flex items-center justify-center
-">
+"
+>
 
 <span className="text-teal-600 font-bold">
 T
@@ -116,8 +129,10 @@ T
 </div>
 
 
+
 {
-isOpen &&
+isOpen && (
+
 <div>
 
 <h1 className="font-bold">
@@ -133,6 +148,8 @@ Business Growth Engine
 </p>
 
 </div>
+
+)
 }
 
 
@@ -140,6 +157,7 @@ Business Growth Engine
 
 
 </div>
+
 
 
 
@@ -150,7 +168,9 @@ Business Growth Engine
 {
 menuItems.map(item=>{
 
-const Icon=item.icon;
+
+const Icon = item.icon;
+
 
 
 return (
@@ -159,14 +179,32 @@ return (
 
 key={item.id}
 
-onClick={()=>
-onTabChange(item.id)
+
+onClick={()=>{
+
+
+if(item.id === "revenue"){
+
+navigate("/revenue");
+
+return;
+
 }
 
+
+onTabChange(item.id);
+
+
+}}
+
+
 className={cn(
+
 "w-full flex items-center px-4 py-3 hover:bg-white/10",
-activeTab===item.id &&
+
+activeTab === item.id &&
 "bg-white/20 border-r-4 border-white"
+
 )}
 
 >
@@ -175,18 +213,24 @@ activeTab===item.id &&
 <Icon className="w-5 h-5"/>
 
 
+
 {
-isOpen &&
+isOpen && (
+
 <span className="ml-3">
 {item.label}
 </span>
+
+)
 }
+
 
 
 </button>
 
 
 )
+
 
 })
 

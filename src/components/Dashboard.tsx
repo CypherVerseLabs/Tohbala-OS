@@ -1,7 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-} from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Card,
@@ -18,6 +15,8 @@ import {
   ArrowUpRight,
   Building2,
   CalendarDays,
+  TrendingUp,
+  Sparkles,
 } from "lucide-react";
 
 import { useData } from "@/contexts/DataContext";
@@ -25,607 +24,829 @@ import { useData } from "@/contexts/DataContext";
 
 const Dashboard: React.FC = () => {
 
-
-const {
-  companies,
-  opportunities,
-  activities,
-} = useData();
-
-const pipelineStages = [
-  "research",
-  "contacted",
-  "conversation",
-  "discovery",
-  "proposal",
-  "client",
-  "lost",
-];
+  const {
+    companies,
+    opportunities,
+    activities,
+  } = useData();
 
 
-
-const activeOpportunities = opportunities.filter(
-  item => item.status !== "lost"
-).length;
-
-const clients = opportunities.filter(
-  item => item.status === "client"
-).length;
-
-
-const totalPipeline =
-opportunities.reduce(
-(sum,item)=>
-sum + item.estimatedValue,
-0
-);
-
-const discoveryCalls =
-activities.filter(
-item =>
-item.title
-.toLowerCase()
-.includes("discovery")
-).length;
-
-const stats = [
-  {
-    title: "Active Opportunities",
-    value: activeOpportunities.toString(),
-    change: "Live pipeline",
-    icon: Target,
-    color: "text-purple-600",
-  },
-  {
-    title: "Pipeline Value",
-    value: `$${totalPipeline.toLocaleString("en-US")}`,
-    change: "Current opportunities",
-    icon: DollarSign,
-    color: "text-green-600",
-  },
-  {
-    title: "Discovery Calls",
-    value: discoveryCalls.toString(),
-    change: "Tracked activities",
-    icon: CalendarDays,
-    color: "text-blue-600",
-  },
-  {
-    title: "Active Clients",
-    value: clients.toString(),
-    change: "Closed deals",
-    icon: Users,
-    color: "text-teal-600",
-  },
-];
+  const pipelineStages = [
+    "research",
+    "contacted",
+    "conversation",
+    "discovery",
+    "proposal",
+    "client",
+    "lost",
+  ];
 
 
-const pipeline = pipelineStages.map(stage => {
-  const stageOpps = opportunities.filter(
-    item => item.status === stage
-  );
+  const activeOpportunities = opportunities.filter(
+    item => item.status !== "lost"
+  ).length;
 
-  const value = stageOpps.reduce(
+
+  const clients = opportunities.filter(
+    item => item.status === "client"
+  ).length;
+
+
+  const totalPipeline = opportunities.reduce(
     (sum, item) => sum + item.estimatedValue,
     0
   );
 
-  return {
-    stage,
-    count: stageOpps.length,
-    value: `$${value.toLocaleString()}`,
-  };
-});
 
+  const discoveryCalls = activities.filter(
+    item =>
+      item.title
+        .toLowerCase()
+        .includes("discovery")
+  ).length;
 
-const recentOpportunities =
-opportunities.slice(0,3);
 
+  const stats = [
+    {
+      title: "Active Opportunities",
+      value: activeOpportunities,
+      description: "Live sales pipeline",
+      icon: Target,
+    },
+    {
+      title: "Pipeline Value",
+      value: `$${totalPipeline.toLocaleString()}`,
+      description: "Current opportunity value",
+      icon: DollarSign,
+    },
+    {
+      title: "Discovery Calls",
+      value: discoveryCalls,
+      description: "Tracked activities",
+      icon: CalendarDays,
+    },
+    {
+      title: "Active Clients",
+      value: clients,
+      description: "Closed opportunities",
+      icon: Users,
+    },
+  ];
 
-const [aiInsights, setAiInsights] = useState<string[]>([]);
-const [loadingAI, setLoadingAI] = useState(false);
 
-useEffect(() => {
-  setLoadingAI(true);
+  const pipeline = pipelineStages.map(stage => {
 
-  setTimeout(() => {
-    setAiInsights([
-      `${companies.length} companies being tracked.`,
-      `${opportunities.filter(o => o.status === "proposal").length} proposals need follow-up.`,
-      `${opportunities.filter(o => o.status === "research").length} new prospects awaiting outreach.`,
-      `Current pipeline value is $${totalPipeline.toLocaleString()}.`,
-    ]);
+    const stageOpps = opportunities.filter(
+      item => item.status === stage
+    );
 
-    setLoadingAI(false);
-  }, 500);
-}, [companies, opportunities, totalPipeline]);
 
+    const value = stageOpps.reduce(
+      (sum, item) =>
+        sum + item.estimatedValue,
+      0
+    );
 
 
-return (
+    return {
+      stage,
+      count: stageOpps.length,
+      value: `$${value.toLocaleString()}`,
+    };
 
-<div className="p-6 space-y-6">
+  });
 
 
-<div>
+  const recentOpportunities =
+    opportunities.slice(0, 3);
 
 
-<h1 className="text-3xl font-bold text-gray-900">
+  const [aiInsights, setAiInsights] =
+    useState<string[]>([]);
 
-Tohbala Command Center
 
-</h1>
+  const [loadingAI, setLoadingAI] =
+    useState(false);
 
 
-<p className="text-gray-600">
 
-Your business operating system for opportunities, technology, and growth.
+  useEffect(() => {
 
-</p>
+    setLoadingAI(true);
 
 
-</div>
+    setTimeout(() => {
 
+      setAiInsights([
+        `${companies.length} companies currently tracked.`,
+        `${opportunities.filter(o => o.status === "proposal").length} proposals need attention.`,
+        `${opportunities.filter(o => o.status === "research").length} prospects awaiting outreach.`,
+        `Pipeline value: $${totalPipeline.toLocaleString()}.`,
+      ]);
 
 
-<div className="
-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6
-">
+      setLoadingAI(false);
 
+    },500);
 
-{
-stats.map(stat=>(
 
+  },[
+    companies,
+    opportunities,
+    totalPipeline
+  ]);
 
-<Card key={stat.title}>
+    return (
 
+    <div className="min-h-screen bg-background p-6 space-y-8">
 
-<CardHeader
-className="
-flex flex-row items-center justify-between pb-2
-"
->
 
+      {/* Header */}
 
-<CardTitle className="text-sm">
+      <div className="flex flex-col gap-2">
 
-{stat.title}
+        <div className="flex items-center gap-3">
 
-</CardTitle>
+          <div className="p-3 rounded-xl bg-primary/10">
 
+            <Sparkles className="w-6 h-6 text-primary" />
 
-<stat.icon
-className={`w-5 h-5 ${stat.color}`}
-/>
+          </div>
 
 
-</CardHeader>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
 
+            Tohbala Command Center
 
-<CardContent>
+          </h1>
 
+        </div>
 
-<div className="text-3xl font-bold">
 
-{stat.value}
+        <p className="text-muted-foreground max-w-2xl">
 
-</div>
+          Your business operating system for opportunities,
+          technology, revenue, and growth.
 
+        </p>
 
-<p className="text-xs text-green-600 flex items-center gap-1">
 
+      </div>
 
-<ArrowUpRight className="w-3 h-3"/>
 
 
-{stat.change}
+      {/* KPI Cards */}
 
 
-</p>
+      <div className="
+        grid 
+        grid-cols-1 
+        md:grid-cols-2 
+        xl:grid-cols-4 
+        gap-6
+      ">
 
 
-</CardContent>
+        {stats.map(stat => (
 
+          <Card
+            key={stat.title}
+            className="
+              border-border
+              bg-card
+              hover:shadow-lg
+              transition-all
+            "
+          >
 
-</Card>
 
+            <CardHeader
+              className="
+                flex
+                flex-row
+                items-center
+                justify-between
+                pb-2
+              "
+            >
 
-))
+              <CardTitle className="
+                text-sm
+                font-medium
+                text-muted-foreground
+              ">
 
-}
+                {stat.title}
 
+              </CardTitle>
 
 
-</div>
+              <div className="
+                p-2
+                rounded-lg
+                bg-primary/10
+              ">
 
+                <stat.icon
+                  className="
+                    w-5
+                    h-5
+                    text-primary
+                  "
+                />
 
+              </div>
 
-<Card>
 
+            </CardHeader>
 
-<CardHeader>
 
-<CardTitle>
+            <CardContent>
 
-Opportunity Pipeline
 
-</CardTitle>
+              <div className="
+                text-3xl
+                font-bold
+                text-foreground
+              ">
 
-</CardHeader>
+                {stat.value}
 
+              </div>
 
-<CardContent>
 
+              <div className="
+                flex
+                items-center
+                gap-1
+                mt-2
+                text-sm
+                text-muted-foreground
+              ">
 
-<div className="
-grid grid-cols-1 md:grid-cols-5 gap-4
-">
 
+                <TrendingUp
+                  className="
+                    w-4
+                    h-4
+                    text-primary
+                  "
+                />
 
-{
-pipeline.map(item=>(
 
+                {stat.description}
 
-<div
-key={item.stage}
-className="
-border rounded-lg p-4
-"
->
 
+              </div>
 
-<h3 className="font-semibold capitalize">
 
-{item.stage}
+            </CardContent>
 
-</h3>
 
+          </Card>
 
-<p className="text-3xl font-bold mt-3">
 
-{item.count}
+        ))}
 
-</p>
 
+      </div>
 
-<p className="text-sm text-gray-500">
 
-opportunities
 
-</p>
 
 
-<p className="font-bold text-green-600 mt-2">
+      {/* Pipeline */}
 
-{item.value}
 
-</p>
+      <Card className="
+        bg-card
+        border-border
+      ">
 
 
-</div>
+        <CardHeader>
 
 
-))
+          <CardTitle>
 
-}
+            Opportunity Pipeline
 
+          </CardTitle>
 
 
-</div>
+        </CardHeader>
 
 
-</CardContent>
 
+        <CardContent>
 
-</Card>
 
+          <div className="
+            grid
+            grid-cols-1
+            md:grid-cols-2
+            xl:grid-cols-5
+            gap-4
+          ">
 
 
-<div className="
-grid grid-cols-1 lg:grid-cols-3 gap-6
-">
+            {pipeline.map(item => (
 
+              <div
+                key={item.stage}
+                className="
+                  rounded-xl
+                  border
+                  border-border
+                  bg-background
+                  p-5
+                  hover:border-primary/40
+                  transition
+                "
+              >
 
-<Card className="lg:col-span-2">
 
+                <p className="
+                  text-sm
+                  font-medium
+                  text-muted-foreground
+                  capitalize
+                ">
 
-<CardHeader>
+                  {item.stage}
 
-<CardTitle>
+                </p>
 
-Priority Opportunities
 
-</CardTitle>
 
-</CardHeader>
+                <p className="
+                  text-3xl
+                  font-bold
+                  mt-3
+                  text-foreground
+                ">
 
+                  {item.count}
 
+                </p>
 
-<CardContent className="space-y-4">
 
 
-{
-recentOpportunities.length === 0
+                <p className="
+                  text-sm
+                  text-muted-foreground
+                ">
 
-?
+                  opportunities
 
-<p className="text-gray-500">
+                </p>
 
-No opportunities yet.
 
-</p>
 
-:
+                <p className="
+                  mt-4
+                  font-semibold
+                  text-primary
+                ">
 
-recentOpportunities.map(item=>(
+                  {item.value}
 
+                </p>
 
-<div
-key={item.id}
-className="
-border rounded-lg p-4
-"
->
 
+              </div>
 
-<div className="flex justify-between">
+            ))}
 
 
-<div>
+          </div>
 
 
-<h3 className="font-bold">
+        </CardContent>
 
-{item.companyName}
 
-</h3>
+      </Card>
 
+            {/* Priority Opportunities + AI */}
 
-<p className="text-sm text-gray-500">
+      <div className="
+        grid
+        grid-cols-1
+        lg:grid-cols-3
+        gap-6
+      ">
 
-{item.industry}
 
-</p>
+        {/* Opportunities */}
 
+        <Card className="
+          lg:col-span-2
+          bg-card
+          border-border
+        ">
 
-</div>
 
+          <CardHeader>
 
-<div className="text-right">
+            <CardTitle>
 
+              Priority Opportunities
 
-<p className="font-bold text-green-600">
+            </CardTitle>
 
-${item.estimatedValue.toLocaleString()}
+          </CardHeader>
 
-</p>
 
 
-<span className="
-text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full
-">
+          <CardContent className="space-y-4">
 
-{item.status}
 
-</span>
+            {recentOpportunities.length === 0 ? (
 
+              <p className="
+                text-muted-foreground
+              ">
 
-</div>
+                No opportunities yet.
 
+              </p>
 
-</div>
 
+            ) : (
 
-<p className="text-sm mt-3">
 
-{item.businessProblem}
+              recentOpportunities.map(item => (
 
-</p>
 
+                <div
+                  key={item.id}
+                  className="
+                    rounded-xl
+                    border
+                    border-border
+                    p-5
+                    bg-background
+                    hover:shadow-md
+                    transition
+                  "
+                >
 
-</div>
 
+                  <div className="
+                    flex
+                    justify-between
+                    gap-4
+                  ">
 
-))
 
+                    <div>
 
-}
 
+                      <h3 className="
+                        font-semibold
+                        text-foreground
+                      ">
 
+                        {item.companyName}
 
-</CardContent>
+                      </h3>
 
 
-</Card>
+                      <p className="
+                        text-sm
+                        text-muted-foreground
+                      ">
 
+                        {item.industry}
 
-<Card>
+                      </p>
 
 
-<CardHeader>
+                    </div>
 
 
-<CardTitle className="flex items-center gap-2">
 
+                    <div className="text-right">
 
-<Brain className="w-5 h-5 text-purple-600"/>
 
+                      <p className="
+                        font-bold
+                        text-primary
+                      ">
 
-AI Intelligence
+                        ${item.estimatedValue.toLocaleString()}
 
+                      </p>
 
-</CardTitle>
 
 
-</CardHeader>
+                      <span className="
+                        inline-flex
+                        mt-2
+                        px-3
+                        py-1
+                        rounded-full
+                        text-xs
+                        bg-primary/10
+                        text-primary
+                        capitalize
+                      ">
 
+                        {item.status}
 
-<CardContent>
+                      </span>
 
 
-<div className="space-y-4">
+                    </div>
 
 
-{
-loadingAI ? (
-  <p className="text-sm text-gray-500">
-    AI is analyzing your business...
-  </p>
-) : (
-  aiInsights.map(item => (
-    <div
-      key={item}
-      className="flex gap-3 items-start"
-    >
-      <div className="w-2 h-2 rounded-full bg-purple-500 mt-2" />
-      <p className="text-sm">{item}</p>
+                  </div>
+
+
+
+                  <p className="
+                    mt-4
+                    text-sm
+                    text-muted-foreground
+                  ">
+
+                    {item.businessProblem}
+
+                  </p>
+
+
+                </div>
+
+
+              ))
+
+            )}
+
+
+          </CardContent>
+
+
+        </Card>
+
+
+
+
+
+        {/* AI Intelligence */}
+
+
+        <Card className="
+          bg-card
+          border-border
+        ">
+
+
+          <CardHeader>
+
+
+            <CardTitle className="
+              flex
+              items-center
+              gap-2
+            ">
+
+
+              <Brain
+                className="
+                  w-5
+                  h-5
+                  text-primary
+                "
+              />
+
+
+              AI Intelligence
+
+
+            </CardTitle>
+
+
+          </CardHeader>
+
+
+
+
+          <CardContent>
+
+
+            <div className="space-y-4">
+
+
+              {loadingAI ? (
+
+
+                <p className="
+                  text-sm
+                  text-muted-foreground
+                ">
+
+                  AI is analyzing your business...
+
+                </p>
+
+
+              ) : (
+
+
+                aiInsights.map(item => (
+
+
+                  <div
+                    key={item}
+                    className="
+                      flex
+                      gap-3
+                      items-start
+                    "
+                  >
+
+
+                    <div className="
+                      w-2
+                      h-2
+                      rounded-full
+                      bg-primary
+                      mt-2
+                    "/>
+
+
+                    <p className="
+                      text-sm
+                      text-foreground
+                    ">
+
+                      {item}
+
+                    </p>
+
+
+                  </div>
+
+
+                ))
+
+
+              )}
+
+
+            </div>
+
+
+          </CardContent>
+
+
+        </Card>
+
+
+      </div>
+
+
+
+
+
+      {/* Business Overview */}
+
+
+      <Card className="
+        bg-card
+        border-border
+      ">
+
+
+        <CardHeader>
+
+          <CardTitle>
+
+            Business Overview
+
+          </CardTitle>
+
+        </CardHeader>
+
+
+
+        <CardContent>
+
+
+          <div className="
+            grid
+            grid-cols-1
+            md:grid-cols-3
+            gap-6
+          ">
+
+
+
+            <OverviewItem
+              icon={<Building2 />}
+              label="Companies Tracked"
+              value={companies.length}
+            />
+
+
+
+            <OverviewItem
+              icon={<Target />}
+              label="Solutions Identified"
+              value={opportunities.length}
+            />
+
+
+
+            <OverviewItem
+              icon={<DollarSign />}
+              label="Projected Revenue"
+              value={`$${totalPipeline.toLocaleString()}`}
+            />
+
+
+
+          </div>
+
+
+        </CardContent>
+
+
+      </Card>
+
+
     </div>
-  ))
-)
 
-}
+  );
 
+};
 
-</div>
 
 
-</CardContent>
 
 
-</Card>
+const OverviewItem = ({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string | number;
+}) => (
 
+  <div className="
+    flex
+    items-center
+    gap-4
+  ">
 
-</div>
 
+    <div className="
+      p-3
+      rounded-xl
+      bg-primary/10
+      text-primary
+    ">
 
-<Card>
+      {icon}
 
+    </div>
 
-<CardHeader>
 
-<CardTitle>
 
-Business Overview
+    <div>
 
-</CardTitle>
 
-</CardHeader>
+      <p className="
+        text-sm
+        text-muted-foreground
+      ">
 
+        {label}
 
-<CardContent>
+      </p>
 
 
-<div className="
-grid grid-cols-1 md:grid-cols-3 gap-6
-">
 
+      <p className="
+        text-2xl
+        font-bold
+        text-foreground
+      ">
 
-<div className="flex gap-3">
+        {value}
 
+      </p>
 
-<Building2
-className="text-teal-600"
-/>
 
+    </div>
 
-<div>
 
-
-<p className="text-sm text-gray-500">
-
-Companies Tracked
-
-</p>
-
-
-<p className="text-2xl font-bold">
-
-{companies.length}
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-<div className="flex gap-3">
-
-
-<Target
-className="text-purple-600"
-/>
-
-
-<div>
-
-
-<p className="text-sm text-gray-500">
-
-Solutions Identified
-
-</p>
-
-
-<p className="text-2xl font-bold">
-
-{opportunities.length}
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-<div className="flex gap-3">
-
-
-<DollarSign
-className="text-green-600"
-/>
-
-
-<div>
-
-
-<p className="text-sm text-gray-500">
-
-Projected Revenue
-
-</p>
-
-
-<p className="text-2xl font-bold">
-
-${totalPipeline.toLocaleString()}
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-</CardContent>
-
-</Card>
-
-
-</div>
+  </div>
 
 );
 
-};
 
 
 export default Dashboard;

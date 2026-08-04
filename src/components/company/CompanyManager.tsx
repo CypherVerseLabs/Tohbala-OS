@@ -9,7 +9,6 @@ import CompanyDetails from "./CompanyDetails";
 
 import { Company } from "@/config/company";
 
-import { useData } from "@/contexts/DataContext";
 
 
 const CompanyManager: React.FC = () => {
@@ -64,25 +63,20 @@ const CompanyManager: React.FC = () => {
 
 
     addActivity({
+  id: Date.now().toString(),
 
-      id:
-      Date.now().toString(),
+  companyId: selectedCompany.id,
 
-      companyId:
-      selectedCompany.id,
+  type: "note",
 
-      type:"note",
+  title: "Company Updated",
 
-      title:
-      "Company Updated",
+  description: `${data.name} information was updated.`,
 
-      description:
-      `${data.name} information was updated.`,
+  createdAt: new Date().toISOString(),
 
-      createdAt:
-      new Date().toISOString()
-
-    });
+  ownerId: selectedCompany.ownerId,
+});
 
 
   }
@@ -112,24 +106,18 @@ const CompanyManager: React.FC = () => {
 
 
     addActivity({
+      id: Date.now().toString(),
 
-      id:
-      Date.now().toString(),
+      companyId: newCompany.id,
 
-      companyId:
-      newCompany.id,
+      type: "note",
 
-      type:"note",
+      title: "Company Created",
 
-      title:
-      "Company Created",
+      description: `${newCompany.name} was added.`,
 
-      description:
-      `${newCompany.name} was added.`,
-
-      createdAt:
-      new Date().toISOString()
-
+      createdAt: new Date().toISOString(),
+      ownerId: ""
     });
 
 
@@ -325,3 +313,7 @@ const CompanyManager: React.FC = () => {
 
 
 export default CompanyManager;
+
+function useData(): { companies: any; activities: any; addCompany: any; updateCompany: any; deleteCompany: any; addActivity: any; opportunities: any; } {
+  throw new Error("Function not implemented.");
+}

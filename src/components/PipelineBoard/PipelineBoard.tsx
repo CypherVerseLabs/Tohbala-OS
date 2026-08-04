@@ -1,11 +1,6 @@
 import React from "react";
 
-import {
-  DndContext,
-  DragEndEvent,
-  useDroppable,
-} from "@dnd-kit/core";
-
+import PipelineBoard from "@/components/PipelineBoard/PipelineBoard";
 
 import {
   Card,
@@ -14,311 +9,54 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-
 import {
-  Badge
-} from "@/components/ui/badge";
-
-
-import {
-  DollarSign,
+  Kanban,
+  TrendingUp,
 } from "lucide-react";
-
-
-import {
-  Opportunity
-} from "@/types/opportunity";
-
-
-import {
-  useData
-} from "@/contexts/DataContext";
-
-
-import OpportunityCard from "../Opportunity/OpportunityCard";
+import { useRevenue } from "@/modules/revenue/hooks/useRevenue";
 
 
 
 
 
-const stages: Opportunity["status"][] = [
-
-"research",
-
-"contacted",
-
-"conversation",
-
-"discovery",
-
-"proposal",
-
-"client",
-
-"lost"
-
-];
-
-
-
-
-
-
-const PipelineColumn = ({
-stage,
-children,
-count,
-value
-}:{
-stage:Opportunity["status"];
-children:React.ReactNode;
-count:number;
-value:number;
-})=>{
+export default function RevenuePipeline(){
 
 
 const {
-setNodeRef,
-isOver
-}=useDroppable({
-
-id:stage
-
-});
-
-
-
-return (
-
-<Card
-
-ref={setNodeRef}
-
-className={`
-min-h-[450px]
-transition
-${isOver ? "bg-teal-50 border-teal-400" : ""}
-`}
-
->
-
-
-<CardHeader>
-
-
-<CardTitle
-className="
-flex justify-between items-center capitalize text-sm
-"
->
-
-
-<span>
-
-{stage}
-
-</span>
-
-
-<Badge>
-
-{count}
-
-</Badge>
-
-
-</CardTitle>
-
-
-
-<p className="
-text-sm text-green-600 font-semibold flex items-center gap-1
-">
-
-
-<DollarSign className="w-3 h-3"/>
-
-
-${value.toLocaleString("en-US")}
-
-
-</p>
-
-
-</CardHeader>
-
-
-
-
-
-<CardContent className="space-y-3">
-
-
-{children}
-
-
-</CardContent>
-
-
-</Card>
-
-
-);
-
-};
-
-
-
-
-
-
-
-
-
-const PipelineBoard:React.FC = ()=>{
-
-
-const {
-
 opportunities,
-
-updateOpportunity,
-
-addActivity
-
-}=useData();
+pipelineValue,
+} = useRevenue();
 
 
 
 
-
-
-
-
-
-const handleDragEnd = (
-event:DragEndEvent
-)=>{
-
-
-const {
-
-active,
-
-over
-
-}=event;
-
-
-
-if(!over)
-return;
-
-
-
-const opportunity =
-opportunities.find(
+const activeDeals =
+opportunities.filter(
 item =>
-item.id === active.id
-);
-
-
-
-if(!opportunity)
-return;
-
-
-
-const newStatus =
-over.id as Opportunity["status"];
-
-
-
-
-if(
-opportunity.status === newStatus
-)
-return;
-
-
-
-
-
-
-updateOpportunity({
-
-...opportunity,
-
-status:newStatus,
-
-updatedAt:
-new Date().toISOString()
-
-});
-
-
-
-
-
-
-addActivity({
-
-id:
-Date.now().toString(),
-
-companyId:
-opportunity.companyId,
-
-opportunityId:
-opportunity.id,
-
-type:"status_change",
-
-title:
-"Pipeline Stage Changed",
-
-description:
-`${opportunity.companyName} moved from ${opportunity.status} to ${newStatus}`,
-
-createdAt:
-new Date().toISOString()
-
-});
-
-
-};
-
-
-
-
-
+item.status !== "lost"
+).length;
 
 
 
 
 return (
-
-<DndContext
-onDragEnd={handleDragEnd}
->
-
 
 <div className="p-6 space-y-6">
 
 
-<div>
 
+<div>
 
 <h1 className="text-3xl font-bold">
 
-Pipeline Board
+Revenue Pipeline
 
 </h1>
 
 
 <p className="text-gray-600">
 
-Drag opportunities through your sales process.
+Manage opportunities through the Revenue OS lifecycle.
 
 </p>
 
@@ -332,130 +70,160 @@ Drag opportunities through your sales process.
 
 
 <div className="
-grid
-grid-cols-1
-md:grid-cols-3
-xl:grid-cols-7
-gap-4
-overflow-x-auto
+grid grid-cols-1 md:grid-cols-3 gap-5
 ">
 
 
-{
-
-stages.map(stage=>{
-
-
-const stageOpportunities =
-opportunities.filter(
-item =>
-item.status === stage
-);
 
 
 
+<Card>
 
-const value =
-stageOpportunities.reduce(
-(sum,item)=>
-sum + item.estimatedValue,
-0
-);
+<CardHeader>
 
+<CardTitle className="flex items-center gap-2">
 
+<Kanban className="text-purple-600"/>
 
+Active Deals
 
-return (
+</CardTitle>
 
-
-<PipelineColumn
-
-key={stage}
-
-stage={stage}
-
-count={
-stageOpportunities.length
-}
-
-value={value}
-
->
+</CardHeader>
 
 
-{
+<CardContent>
 
-stageOpportunities.length === 0
+<p className="text-3xl font-bold">
 
-?
-
-<p className="
-text-sm text-gray-400 text-center py-8
-">
-
-Drop opportunity here
+{activeDeals}
 
 </p>
 
-
-:
-
-
-stageOpportunities.map(
-opportunity=>(
+</CardContent>
 
 
-<OpportunityCard
-
-key={opportunity.id}
-
-opportunity={opportunity}
-
-draggable={true}
-
-onEdit={()=>{}}
-
-onDelete={()=>{}}
-
-onStatusChange={()=>{}}
-
-/>
-
-
-)
-
-)
-
-
-}
+</Card>
 
 
 
-</PipelineColumn>
 
 
-);
 
 
-})
+<Card>
 
-}
+<CardHeader>
+
+<CardTitle className="flex items-center gap-2">
+
+<TrendingUp className="text-green-600"/>
+
+Pipeline Value
+
+</CardTitle>
+
+</CardHeader>
+
+
+<CardContent>
+
+<p className="text-3xl font-bold">
+
+${pipelineValue.toLocaleString()}
+
+</p>
+
+</CardContent>
+
+
+</Card>
+
+
+
+
+
+
+
+<Card>
+
+<CardHeader>
+
+<CardTitle>
+
+Revenue Engine
+
+</CardTitle>
+
+</CardHeader>
+
+
+<CardContent>
+
+<p className="text-gray-600">
+
+Drag deals between stages to update forecasts automatically.
+
+</p>
+
+</CardContent>
+
+
+</Card>
+
 
 
 
 </div>
 
 
+
+
+
+
+
+<Card>
+
+
+<CardHeader>
+
+
+<CardTitle className="flex items-center gap-2">
+
+
+<Kanban className="w-5 h-5 text-purple-600"/>
+
+
+Pipeline Board
+
+
+</CardTitle>
+
+
+</CardHeader>
+
+
+
+
+
+<CardContent className="p-0">
+
+
+<PipelineBoard />
+
+
+</CardContent>
+
+
+</Card>
+
+
+
+
+
+
 </div>
-
-
-</DndContext>
 
 );
 
-
-};
-
-
-
-export default PipelineBoard;
+}

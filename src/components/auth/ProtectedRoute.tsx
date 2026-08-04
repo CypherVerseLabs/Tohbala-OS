@@ -1,25 +1,43 @@
 import {
-Navigate
+  Navigate
 } from "react-router-dom";
 
+import {
+  ReactNode
+} from "react";
 
 import {
-useAuth
+  useAuth
 } from "@/contexts/AuthContext";
+
+import {
+  UserRole
+} from "@/types/user";
+
+
+
+interface ProtectedRouteProps {
+
+  children: ReactNode;
+
+  allowedRoles?: UserRole[];
+
+}
 
 
 
 const ProtectedRoute = ({
-children
-}:{
-children:React.ReactNode;
-})=>{
+  children,
+  allowedRoles,
+}: ProtectedRouteProps) => {
 
 
 const {
-user,
-loading
+  user,
+  role,
+  loading
 }=useAuth();
+
 
 
 
@@ -28,7 +46,12 @@ if(loading){
 
 return (
 
-<div className="min-h-screen flex items-center justify-center">
+<div className="
+min-h-screen
+flex
+items-center
+justify-center
+">
 
 Loading...
 
@@ -59,8 +82,30 @@ replace
 
 
 
-return children;
 
+
+if(
+allowedRoles &&
+!allowedRoles.includes(role)
+){
+
+return (
+
+<Navigate
+to="/"
+replace
+/>
+
+);
+
+}
+
+
+
+
+
+
+return <>{children}</>;
 
 };
 

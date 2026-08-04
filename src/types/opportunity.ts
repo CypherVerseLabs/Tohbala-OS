@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export type OpportunityStatus =
   | "research"
   | "contacted"
@@ -30,69 +32,103 @@ export type TechnologyNeed =
   | "Custom Software";
 
 
+
 export interface Opportunity {
-
-  id: string;
-
-companyId: string;
-  // Contact Information
-  contactName: string;
-
-  email: string;
-
-  phone: string;
+  title: ReactNode;
 
 
+  id:string;
 
-  // Company Information
-  companyName: string;
 
-  website: string;
-
-  industry: string;
-
-  companySize: string;
+  /**
+   * Supabase authenticated owner
+   * Maps to owner_id
+   */
+  ownerId:string;
 
 
 
-  // Discovery Information
-  businessProblem: string;
-
-  currentProcess?: string;
-
-  proposedSolution: string;
+  /**
+   * Company Relationship
+   */
+  companyId?:string;
 
 
 
-  // Technology Opportunity
-  technologyNeeds: TechnologyNeed[];
+  /**
+   * Contact Information
+   */
+  contactName:string;
+
+  email:string;
+
+  phone:string;
 
 
 
-  // Pipeline
-  status: OpportunityStatus;
+  /**
+   * Company Information
+   */
+  companyName:string;
 
-  estimatedValue: number;
+  website:string;
 
+  industry:string;
 
-
-  // Relationship Tracking
-  source: OpportunitySource;
-
-  lastContact: string;
-
-  nextFollowUp: string;
+  companySize:string;
 
 
 
-  // Notes
-  notes: string;
+  /**
+   * Discovery Information
+   */
+  businessProblem:string;
+
+  currentProcess?:string;
+
+  proposedSolution:string;
 
 
 
-  // Metadata
-  createdAt: string;
+  /**
+   * Technology Opportunity
+   */
+  technologyNeeds:TechnologyNeed[];
 
-  updatedAt: string;
+
+
+  /**
+   * Pipeline
+   */
+  status:OpportunityStatus;
+
+  estimatedValue:number;
+
+
+
+  /**
+   * Relationship Tracking
+   */
+  source:OpportunitySource;
+
+  lastContact:string;
+
+  nextFollowUp:string;
+
+
+
+  /**
+   * Notes
+   */
+  notes:string;
+
+
+
+  /**
+   * Metadata
+   */
+  createdAt:string;
+
+  updatedAt:string;
 
 }

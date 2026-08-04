@@ -4,6 +4,8 @@ import { supabase } from "@/lib/supabase";
 import { Company } from "@/config/company";
 
 const companyToDb = (company: Company) => ({
+  owner_id: company.ownerId,
+
   name: company.name,
   website: company.website,
   industry: company.industry,
@@ -19,28 +21,42 @@ const companyToDb = (company: Company) => ({
 
 const companyFromDb = (row: any): Company => ({
   id: row.id,
+
+  ownerId: row.owner_id ?? "",
+
   name: row.name,
   website: row.website ?? "",
   industry: row.industry ?? "",
-  size: row.size ?? "",
+  size: row.size,
   description: row.description ?? "",
   location: row.location ?? "",
+
   primaryContact: row.primary_contact ?? "",
   email: row.email ?? "",
   phone: row.phone ?? "",
+
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
 
 export const CompanyService = {
   async getAll(): Promise<Company[]> {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return [];
+
     const { data, error } = await supabase
       .from("companies")
       .select("*")
-      .order("created_at", { ascending: false });
+      .eq("owner_id", user.id)
+      .order("created_at", {
+        ascending: false,
+      });
 
     if (error) {
-      console.error("Failed to load companies:", error);
+      console.error(error);
       throw error;
     }
 
@@ -48,14 +64,21 @@ export const CompanyService = {
   },
 
   async getById(id: string): Promise<Company | null> {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return null;
+
     const { data, error } = await supabase
       .from("companies")
       .select("*")
       .eq("id", id)
+      .eq("owner_id", user.id)
       .single();
 
     if (error) {
-      console.error("Failed to load company:", error);
+      console.error(error);
       throw error;
     }
 
@@ -64,16 +87,27 @@ export const CompanyService = {
 
   async create(company: Company): Promise<Company> {
     const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+
+    const {
       data,
       error,
     } = await supabase
       .from("companies")
-      .insert(companyToDb(company))
+      .insert({
+        ...companyToDb(company),
+        owner_id: user.id,
+      })
       .select()
       .single();
 
     if (error) {
-      console.error("Failed to create company:", error);
+      console.error(error);
       throw error;
     }
 
@@ -82,22 +116,31 @@ export const CompanyService = {
 
   async update(company: Company): Promise<Company> {
     const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+
+    const {
       data,
       error,
     } = await supabase
       .from("companies")
-      .update(
-        companyToDb({
+      .update({
+        ...companyToDb({
           ...company,
           updatedAt: new Date().toISOString(),
-        })
-      )
+        }),
+      })
       .eq("id", company.id)
+      .eq("owner_id", user.id)
       .select()
       .single();
 
     if (error) {
-      console.error("Failed to update company:", error);
+      console.error(error);
       throw error;
     }
 
@@ -105,13 +148,22 @@ export const CompanyService = {
   },
 
   async remove(id: string): Promise<void> {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+
     const { error } = await supabase
       .from("companies")
       .delete()
-      .eq("id", id);
+      .eq("id", id)
+      .eq("owner_id", user.id);
 
     if (error) {
-      console.error("Failed to delete company:", error);
+      console.error(error);
       throw error;
     }
   },

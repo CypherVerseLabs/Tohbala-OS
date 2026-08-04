@@ -12,23 +12,37 @@ export interface Activity {
   id:string;
 
 
-  // Relations
+  /**
+   * Supabase authenticated user owner
+   */
+  ownerId:string;
+
+
+  /**
+   * Related records
+   */
   companyId?:string;
 
   opportunityId?:string;
 
 
-  // Activity type
+  /**
+   * Activity classification
+   */
   type:ActivityType;
 
 
-  // Content
+  /**
+   * Activity content
+   */
   title:string;
 
-  description:string;
+  description?:string;
 
 
-  // Metadata
+  /**
+   * Audit fields
+   */
   createdAt:string;
 
 }

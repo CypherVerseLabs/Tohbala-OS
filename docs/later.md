@@ -159,3 +159,221 @@ docs/legal
 The goal is not "make it impossible for anyone to sue" — no document can do that. The goal is to make responsibilities clear, reduce misunderstandings, and show that CypherVerse Labs operates professionally.
 
 Before public launch, especially if companies will store customer data inside Tohbala OS, it would be worth having an attorney review the final legal documents for your jurisdiction and business model.
+
+
+----------------------------------------------------
+
+What Tohbala OS Needs Next
+1. User Accounts
+
+You already started this.
+
+Need:
+
+Users
+Organizations
+Roles
+
+Example:
+
+Organization
+
+ |
+ ├── Owner
+ |
+ ├── Sales Manager
+ |
+ ├── Consultant
+ |
+ └── Employee
+2. Multi-Tenant Architecture
+
+Critical before scaling.
+
+Each company must have isolated data.
+
+Example:
+
+Company A:
+
+Opportunities
+Companies
+Activities
+Users
+
+Company B:
+
+Opportunities
+Companies
+Activities
+Users
+
+Never mixed.
+
+3. Settings System
+
+You already have the menu.
+
+Build:
+
+Account Settings
+Profile
+Password
+Avatar
+Organization Settings
+Company name
+Logo
+Industry
+Team members
+CRM Settings
+Pipeline stages
+Opportunity fields
+Activity types
+4. AI Opportunity Scanner
+
+This becomes your differentiator.
+
+Version 1:
+
+Manual AI analysis.
+
+Example:
+
+User enters:
+
+Company:
+Construction Company
+
+Problem:
+Poor customer communication
+
+AI returns:
+
+Opportunity Score:
+87%
+
+Recommended Solution:
+
+Customer Portal
+CRM Integration
+AI Communication Assistant
+
+Estimated Value:
+$25k-$50k
+5. Reporting System
+
+Add:
+
+Revenue Intelligence
+Pipeline value
+Closed revenue
+Forecast
+Opportunity Intelligence
+Best industries
+Most requested solutions
+Conversion rates
+6. Notifications
+
+Businesses need reminders.
+
+Examples:
+
+"Follow up with ABC Manufacturing today."
+
+"Opportunity has been inactive for 14 days."
+
+"Proposal waiting for response."
+
+7. Integrations
+
+Future:
+
+Email
+Gmail
+Outlook
+Calendar
+Google Calendar
+Microsoft Calendar
+Communication
+Slack
+Teams
+8. AI Business Assistant
+
+Long-term vision:
+
+A CEO asks:
+
+"What are my biggest opportunities this month?"
+
+AI answers:
+
+Top opportunities:
+
+1. ABC Manufacturing
+   Score: 92%
+   Value: $120k
+
+2. XYZ Healthcare
+   Score: 86%
+   Value: $75k
+
+Recommendation:
+Focus on manufacturing automation.
+The Bigger Positioning
+
+I would position Tohbala OS as:
+
+An AI-powered business operating system that helps companies discover opportunities, manage relationships, recommend technology solutions, and accelerate growth.
+
+Not just CRM.
+
+Not just analytics.
+
+Not just AI.
+
+A combination:
+
+CRM
+ +
+Business Intelligence
+ +
+AI Recommendations
+ +
+Automation
+ =
+Tohbala OS
+The next development order I would recommend
+
+Based on where your code is now:
+
+Phase 1 (Current)
+
+✅ Companies
+✅ Opportunities
+✅ Pipeline
+✅ Activities
+✅ Supabase
+✅ Authentication foundation
+
+Phase 2
+
+Build:
+
+Settings page
+User profiles
+Organization model
+Permissions
+Database security (RLS)
+Phase 3
+
+Build:
+
+AI Opportunity Scanner
+AI scoring
+Recommendations
+Phase 4
+Integrations
+Automation engine
+Reporting suite
+
+At that point Tohbala OS becomes a real SaaS product, not just an internal CRM.

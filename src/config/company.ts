@@ -7,9 +7,11 @@ export type CompanySize =
 
 
 export interface Company {
+  [x: string]: string;
 
   id: string;
 
+  ownerId: string;
 
   name: string;
 
@@ -19,19 +21,15 @@ export interface Company {
 
   size?: CompanySize;
 
-
   description?: string;
 
-
   location?: string;
-
 
   primaryContact?: string;
 
   email?: string;
 
   phone?: string;
-
 
   createdAt: string;
 
